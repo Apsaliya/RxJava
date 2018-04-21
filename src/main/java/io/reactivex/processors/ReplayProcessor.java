@@ -49,7 +49,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.t.png" alt="">
  * </li>
- * <li>{@link #createWithTimeAndSize(long, TimeUnit, Scheduler, int)}: retaims no more than the given number of items
+ * <li>{@link #createWithTimeAndSize(long, TimeUnit, Scheduler, int)}: retains no more than the given number of items
  * which are also no older than the specified time and replays them to new {@code Subscriber}s (which could mean all items age out).
  * <p>
  * <img width="640" height="404" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.nt.png" alt="">
@@ -117,6 +117,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created ReplayProcessor
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> create() {
         return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(16));
     }
@@ -137,6 +138,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> create(int capacityHint) {
         return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
@@ -162,6 +164,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> createWithSize(int maxSize) {
         return new ReplayProcessor<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
@@ -216,6 +219,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
@@ -255,6 +259,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }
@@ -354,6 +359,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         ReplayBuffer<T> b = buffer;
         if (b.isDone()) {
@@ -510,6 +516,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         int size();
 
+        @Nullable
         T getValue();
 
         T[] getValues(T[] array);
@@ -598,6 +605,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
+        @Nullable
         public T getValue() {
             int s = size;
             if (s == 0) {
@@ -1091,6 +1099,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
+        @Nullable
         public T getValue() {
             TimedNode<T> h = head;
 

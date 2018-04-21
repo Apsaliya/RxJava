@@ -2354,7 +2354,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Flowable that emits items based on applying a specified function to the item emitted by the
      * source Single, where that function returns a Publisher.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
@@ -2365,7 +2365,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source Single, returns an
+     *            a function that, when applied to the item emitted by the source Single, returns a
      *            Flowable
      * @return the Flowable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -2481,6 +2481,10 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dt><b>Error handling:</b></dt>
+     * <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     * into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     * {@link Error}s are rethrown as they are.</dd>
      * </dl>
      * @return the success value
      */
@@ -2513,7 +2517,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * 
      * public final class CustomSingleObserver&lt;T&gt; implements SingleObserver&lt;T&gt;, Disposable {
      *
-     *     // The donstream's SingleObserver that will receive the onXXX events
+     *     // The downstream's SingleObserver that will receive the onXXX events
      *     final SingleObserver&lt;? super String&gt; downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods
@@ -3487,9 +3491,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * and calls {@code onComplete} when this source {@link Single} calls
      * {@code onSuccess}. Error terminal event is propagated.
      * <p>
-     * <img width="640" height="295" src=
-     * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
-     * alt="">
+     * <img width="640" height="436" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toCompletable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3499,10 +3501,33 @@ public abstract class Single<T> implements SingleSource<T> {
      *         calls {@code onSuccess}.
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
      * @since 2.0
+     * @deprecated see {@link #ignoreElement()} instead, will be removed in 3.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
+    @Deprecated
     public final Completable toCompletable() {
+        return RxJavaPlugins.onAssembly(new CompletableFromSingle<T>(this));
+    }
+
+    /**
+     * Returns a {@link Completable} that ignores the success value of this {@link Single}
+     * and calls {@code onComplete} instead on the returned {@code Completable}.
+     * <p>
+     * <img width="640" height="436" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ignoreElement.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@link Completable} that calls {@code onComplete} on it's observer when the source {@link Single}
+     *         calls {@code onSuccess}.
+     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
+     * @since 2.1.13
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable ignoreElement() {
         return RxJavaPlugins.onAssembly(new CompletableFromSingle<T>(this));
     }
 

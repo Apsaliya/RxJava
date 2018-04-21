@@ -2180,6 +2180,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dt><b>Error handling:</b></dt>
+     * <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     * into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     * {@link Error}s are rethrown as they are.</dd>
      * </dl>
      * @return the success value
      */
@@ -2197,6 +2201,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dt><b>Error handling:</b></dt>
+     * <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     * into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     * {@link Error}s are rethrown as they are.</dd>
      * </dl>
      * @param defaultValue the default item to return if this Maybe is empty
      * @return the success value
@@ -2970,7 +2978,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source Maybe, returns an
+     *            a function that, when applied to the item emitted by the source Maybe, returns a
      *            Flowable
      * @return the Flowable returned from {@code func} when applied to the item emitted by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -3076,7 +3084,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Ignores the item emitted by the source Maybe and only calls {@code onComplete} or {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
+     * <img width="640" height="389" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.ignoreElement.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3131,7 +3139,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * 
      * public final class CustomMaybeObserver&lt;T&gt; implements MaybeObserver&lt;T&gt;, Disposable {
      *
-     *     // The donstream's MaybeObserver that will receive the onXXX events
+     *     // The downstream's MaybeObserver that will receive the onXXX events
      *     final MaybeObserver&lt;? super String&gt; downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods
